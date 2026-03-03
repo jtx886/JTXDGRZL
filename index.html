@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>杰同学的个人资料🐾</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: url('https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAERZidppoMGUAIx2Zg8qAeiFtTAhT6f3gAC_SEAAt7rOVXlBSo71ljqoDoE.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transform: translateY(-50px);
+            opacity: 0;
+            animation: fadeDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation-delay: 0.2s;
+            z-index: 10;
+        }
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-30px);
+            opacity: 0;
+            animation: fadeDown 0.6s ease forwards;
+            animation-delay: 0.5s;
+        }
+        .name {
+            font-size: 28px;
+            font-weight: 600;
+            color: #ff69b4;
+            margin-bottom: 10px;
+            transform: translateY(-30px);
+            opacity: 0;
+            animation: fadeDown 0.6s ease forwards;
+            animation-delay: 0.7s;
+        }
+        .slogan {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            transform: translateY(-30px);
+            opacity: 0;
+            animation: fadeDown 0.6s ease forwards;
+            animation-delay: 0.9s;
+        }
+        .links {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .link-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: translateY(-30px);
+            opacity: 0;
+            animation: fadeDown 0.6s ease forwards;
+        }
+        .link-card:nth-child(1) {
+            animation-delay: 1.1s;
+        }
+        .link-card:nth-child(2) {
+            animation-delay: 1.3s;
+        }
+        .link-card:nth-child(3) {
+            animation-delay: 1.5s;
+        }
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+        .link-card img {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .link-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .link-desc {
+            font-size: 12px;
+            color: #999;
+        }
+        .footer {
+            font-size: 12px;
+            color: #999;
+            transform: translateY(-30px);
+            opacity: 0;
+            animation: fadeDown 0.6s ease forwards;
+            animation-delay: 1.7s;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal.active .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .modal-btn.confirm {
+            background: #ff69b4;
+            color: #fff;
+        }
+        .modal-btn.cancel {
+            background: #f0f0f0;
+            color: #333;
+        }
+        @keyframes fadeDown {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* 播放器核心样式 - 简化优化，减少冲突 */
+        #sidePlayer {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        #playerTab {
+            width: 50px;
+            height: 120px;
+            background: #ff69b4;
+            color: #fff;
+            writing-mode: vertical-rl;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+            border-radius: 0 10px 10px 0;
+            font-weight: 700;
+            box-shadow: 0 0 10px rgba(0,0,0,.2);
+        }
+        #playerPanel {
+            width: 0;
+            height: 400px;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            color: #333;
+            border-radius: 0 15px 15px 0;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 2px 0 15px rgba(0,0,0,.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #sidePlayer:hover #playerPanel {
+            width: 300px;
+            padding: 0 15px;
+        }
+        #songInfo {
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #ff69b4;
+            font-weight: 500;
+            text-align: center;
+            width: 100%;
+        }
+        #progressContainer {
+            width: 95%;
+            margin: 10px 0;
+        }
+        #progressBar {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #f0f0f0;
+            border-radius: 3px;
+            outline: 0;
+            cursor: pointer;
+        }
+        #progressBar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #ff69b4;
+            border-radius: 50%;
+        }
+        .ctrlBtn {
+            padding: 6px 12px;
+            margin: 0 3px;
+            border: none;
+            border-radius: 6px;
+            background: #ff69b4;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .speedGroup {
+            margin: 8px 0;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .speedBtn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            background: #f0f0f0;
+            color: #333;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .speedBtn.active {
+            background: #ff69b4;
+            color: #fff;
+        }
+        #playlist {
+            width: 95%;
+            max-height: 120px;
+            overflow-y: auto;
+            margin: 10px 0;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+        }
+        #playlist .song-item {
+            padding: 5px 8px;
+            margin: 3px 0;
+            background: #f8f8f8;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: left;
+        }
+        #playlist .song-item:hover, #playlist .song-item.active {
+            background: #ff69b4;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 个人资料页核心内容 -->
+    <div class="container">
+        <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAERBL5pl9Ykh3n5oiHypZ8uoHNWfX-6cQACmBsAAmDbwVTnyLSbF0OMZzoE.jpg" alt="杰同学" class="avatar">
+        <div class="name">杰同学</div>
+        <div class="slogan">欢迎访问我的个人资料</div>
+        <div class="slogan">祝你天天开心</div>
+        <div class="slogan">与你相交甚好</div>
+        <div class="slogan">如愿与你相识</div>
+        <div class="links">
+            <div class="link-card" onclick="showModal('blog')">
+                <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAERBL5pl9Ykh3n5oiHypZ8uoHNWfX-6cQACmBsAAmDbwVTnyLSbF0OMZzoE.jpg" alt="博客">
+                <div class="link-title">进入聊天室</div>
+                <div class="link-desc">多功能实时聊天</div>
+            </div>
+            <div class="link-card" onclick="showModal('douyin')">
+                          <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAERBL5pl9Ykh3n5oiHypZ8uoHNWfX-6cQACmBsAAmDbwVTnyLSbF0OMZzoE.jpg" alt="导航页">
+                <div class="link-title">导航页</div>
+                <div class="link-desc">进入导航页</div>
+            </div>
+            <div class="link-card" onclick="showModal('qqgroup')">
+                <img src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAERBL5pl9Ykh3n5oiHypZ8uoHNWfX-6cQACmBsAAmDbwVTnyLSbF0OMZzoE.jpg" alt="联系我们">
+                <div class="link-title">联系我们</div>
+                <div class="link-desc">在这里联系到我</div>
+            </div>
+        </div>
+        <div class="footer">
+            备案号：桂ICP备202602110908号<br>
+            作者：杰同学🐾
+        </div>
+    </div>
+
+    <!-- 弹窗组件 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" id="confirmBtn">确认</button>
+                <button class="modal-btn cancel" onclick="hideModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 音乐播放器（仅4首指定歌曲） -->
+    <div id="sidePlayer">
+        <div id="playerTab">歌单</div>
+        <div id="playerPanel">
+            <div id="songInfo">点击播放歌曲</div>
+            <div id="progressContainer">
+                <input type="range" id="progressBar" min="0" max="100" value="0">
+            </div>
+            <div>
+                <button class="ctrlBtn" onclick="prevSong()">上一首</button>
+                <button class="ctrlBtn" onclick="playPause()">播放</button>
+                <button class="ctrlBtn" onclick="nextSong()">下一首</button>
+            </div>
+            <div class="speedGroup">
+                <button class="speedBtn" onclick="setSpeed(0.5)">0.5x</button>
+                <button class="speedBtn active" onclick="setSpeed(1)">1x</button>
+                <button class="speedBtn" onclick="setSpeed(1.5)">1.5x</button>
+                <button class="speedBtn" onclick="setSpeed(2)">2x</button>
+            </div>
+            <div id="playlist"></div>
+        </div>
+    </div>
+    <audio id="audioPlayer" preload="none">
+
+    <script>
+        // 4首指定歌曲 - 用公开可播直链（替换失效链接）
+        const myPlaylist = [
+            {
+                name: "孤岛 - 赵二",
+                url: "http://music.163.com/song/media/outer/url?id=3339014825.mp3"
+            },
+            {
+                name: "于是 - 郑润泽",
+                url: "http://music.163.com/song/media/outer/url?id=1303464858.mp3"
+            },
+            {
+                name: "小半（笙稔 remix） - 笙稔",
+                url: "http://music.163.com/song/media/outer/url?id=3339109201.mp3"
+            },
+            {
+                name: "陪你看星星 - 音乐休憩站",
+                url: "http://music.163.com/song/media/outer/url?id=2637321829.mp3"
+            },
+             {
+                name: "予你 - 队长",
+                url: "http://music.163.com/song/media/outer/url?id=1895330088.mp3"
+            }
+        ];
+
+        let audio = document.getElementById("audioPlayer");
+        let progressBar = document.getElementById("progressBar");
+        let songInfo = document.getElementById("songInfo");
+        let currentIndex = 0;
+        let isPlaying = false;
+
+        // 渲染歌单（确保4首歌正常显示）
+        function renderPlaylist() {
+            const playlistDom = document.getElementById("playlist");
+            playlistDom.innerHTML = "";
+            myPlaylist.forEach((song, index) => {
+                const item = document.createElement("div");
+                item.className = `song-item ${index === currentIndex ? 'active' : ''}`;
+                item.innerText = `${index + 1}. ${song.name}`;
+                item.onclick = () => {
+                    currentIndex = index;
+                    loadSong();
+                    audio.play().then(() => updatePlayState(true));
+                };
+                playlistDom.appendChild(item);
+            });
+        }
+
+        // 加载当前歌曲
+        function loadSong() {
+            const song = myPlaylist[currentIndex];
+            audio.src = song.url;
+            songInfo.innerText = song.name;
+            progressBar.value = 0;
+            renderPlaylist();
+        }
+
+        // 播放/暂停切换
+        function playPause() {
+            if (!audio.src) {
+                loadSong();
+                audio.play().then(() => updatePlayState(true));
+            } else {
+                isPlaying ? audio.pause() : audio.play();
+                updatePlayState(!isPlaying);
+            }
+        }
+
+        // 更新播放状态（按钮文字+高亮）
+        function updatePlayState(playing) {
+            isPlaying = playing;
+            document.querySelector('.ctrlBtn:nth-child(2)').innerText = playing ? "暂停" : "播放";
+        }
+
+        // 上一首
+        function prevSong() {
+            currentIndex = (currentIndex - 1 + myPlaylist.length) % myPlaylist.length;
+            loadSong();
+            isPlaying && audio.play();
+        }
+
+        // 下一首
+        function nextSong() {
+            currentIndex = (currentIndex + 1) % myPlaylist.length;
+            loadSong();
+            isPlaying && audio.play();
+        }
+
+        // 倍速调节
+        function setSpeed(speed) {
+            audio.playbackRate = speed;
+            document.querySelectorAll('.speedBtn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText === `${speed}x`);
+            });
+        }
+
+        // 进度条同步
+        audio.ontimeupdate = () => {
+            if (audio.duration) {
+                progressBar.value = (audio.currentTime / audio.duration) * 100;
+            }
+        };
+
+        // 拖动进度条跳转
+        progressBar.oninput = () => {
+            if (audio.duration) {
+                audio.currentTime = (progressBar.value / 100) * audio.duration;
+            }
+        };
+
+        // 播放结束自动下一首
+        audio.onended = nextSong;
+
+        // 初始化歌单
+        renderPlaylist();
+
+        // 原有弹窗逻辑
+        function showModal(type) {
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modalTitle');
+            const confirmBtn = document.getElementById('confirmBtn');
+            modal.classList.add('active');
+            
+            const pauseMusic = () => {
+                if (isPlaying) {
+                    audio.pause();
+                    updatePlayState(false);
+                }
+            };
+
+            if (type === 'blog') {
+                modalTitle.textContent = '是否进入聊天室？';
+                confirmBtn.onclick = () => {
+                    pauseMusic();
+                    window.open('https://jtx886.github.io/jtxnb111.github.io/', '_blank');
+                    hideModal();
+                };
+            } else if (type === 'douyin') {
+                modalTitle.textContent = '是否跳转到作者的导航页？';
+                confirmBtn.onclick = () => {
+                    pauseMusic();
+                    window.open('https://jtx886.github.io/JTXGRDHY.github.io/');
+                    hideModal();
+                };
+            } else if (type === 'qqgroup') {
+                modalTitle.textContent = '是否跳转QQ群？';
+                confirmBtn.onclick = () => {
+                    pauseMusic();
+                    window.open('https://qm.qq.com/q/vE5RO5sweI', '_blank');
+                    hideModal();
+                };
+            }
+        }
+
+        function hideModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
